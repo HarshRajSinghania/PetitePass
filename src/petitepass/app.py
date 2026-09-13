@@ -55,16 +55,16 @@ def _run_gui() -> int:
     # Qt (and everything that pulls it in) is imported lazily so that
     # `--version` / `--help` work in the frozen binary without a display or the
     # Qt system libraries being present.
-    from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QStyleFactory, QWidget
+    from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QWidget
 
     from petitepass.core.vault import VAULT
     from petitepass.gui.authDialog import AuthDialog
     from petitepass.gui.mainWindow import MainWindow
+    from petitepass.gui.theme import apply_theme
 
     class PasswordManagerApp(QMainWindow):
         def __init__(self):
             super().__init__()
-            self.setStyle(QStyleFactory.create("Fusion"))
             self.mainWindow = None
             if not self._authenticate():
                 sys.exit()
@@ -93,6 +93,7 @@ def _run_gui() -> int:
                 QApplication.quit()
 
     app = QApplication(sys.argv)
+    apply_theme(app)
     _ = PasswordManagerApp()
     return app.exec_()
 

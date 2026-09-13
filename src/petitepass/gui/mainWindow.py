@@ -35,6 +35,9 @@ _COLUMNS = ["Name", "Username", "Password", "Created", "Updated",
             "Visibility", "Copy", "Copy user"]
 _COL_NAME, _COL_USER, _COL_PW = 0, 1, 2
 _COL_SHOW, _COL_COPY, _COL_COPYUSER = 5, 6, 7
+# Fixed widths for the button columns (ResizeToContents ignores cell widgets),
+# keyed by column so the wider "Copy user" button is not clipped.
+_BUTTON_COL_W = {_COL_SHOW: 90, _COL_COPY: 90, _COL_COPYUSER: 112}
 
 
 class MainWindow(QWidget):
@@ -199,8 +202,17 @@ class MainWindow(QWidget):
         self.table.setRowCount(0)
         self.table.setColumnCount(len(_COLUMNS))
         self.table.setHorizontalHeaderLabels(_COLUMNS)
-        self.table.horizontalHeader().setSectionResizeMode(
-            QHeaderView.ResizeToContents)
+        header = self.table.horizontalHeader()
+        # Timestamps size to their (fixed-width) content; the text columns share
+        # the remaining width so the table always fills the window.
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        for col in (_COL_NAME, _COL_USER, _COL_PW):
+            header.setSectionResizeMode(col, QHeaderView.Stretch)
+        # ResizeToContents measures header/item text but NOT cell widgets, so the
+        # button columns would clip their buttons. Size those to the buttons.
+        for col, width in _BUTTON_COL_W.items():
+            header.setSectionResizeMode(col, QHeaderView.Fixed)
+            self.table.setColumnWidth(col, width)
 
         try:
             # The Vault returns passwordless summaries, so plaintext is never
@@ -238,13 +250,19 @@ class MainWindow(QWidget):
 
     # -- clipboard ---------------------------------------------------------
 
+    def _cellButton(self, text):
+        # Compact, quieter button styled for inside a table cell (see theme.py).
+        button = QPushButton(text, self)
+        button.setProperty("cellButton", "true")
+        return button
+
     def addCopyButton(self, row, name):
-        button = QPushButton("Copy", self)
+        button = self._cellButton("Copy")
         button.clicked.connect(lambda _=False, n=name: self.copyToClipboard(n))
         self.table.setCellWidget(row, _COL_COPY, button)
 
     def addCopyUserButton(self, row, username):
-        button = QPushButton("Copy user", self)
+        button = self._cellButton("Copy user")
         button.clicked.connect(
             lambda _=False, u=username: self.copyUsernameToClipboard(u))
         self.table.setCellWidget(row, _COL_COPYUSER, button)
@@ -282,7 +300,7 @@ class MainWindow(QWidget):
     # -- show/hide ---------------------------------------------------------
 
     def addPasswordButton(self, row, name):
-        button = QPushButton("Show", self)
+        button = self._cellButton("Show")
         button.clicked.connect(
             lambda _=False, r=row, n=name: self.togglePasswordVisibility(r, n))
         self.table.setCellWidget(row, _COL_SHOW, button)
