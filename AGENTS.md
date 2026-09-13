@@ -28,7 +28,7 @@ The pytest suite links against **real SQLCipher** (`sqlcipher3`, which ships cro
 
 ## Non-negotiable invariants
 
-These are also listed in [docs/DESIGN.md §9](docs/DESIGN.md#9-invariants-do-not-regress). A change that breaks one is a security regression even if CI is green:
+These are also listed in [docs/DESIGN.md §16](docs/DESIGN.md#16-invariants-do-not-regress) (12 in total; the subset below is the day-to-day core). A change that breaks one is a security regression even if CI is green:
 
 1. **Authentication = decryption.** A session is valid only if the vault decrypts *and* the `password` table is present. Never reintroduce a sidecar verifier.
 2. **No hand-built PRAGMA.** The master password reaches SQLCipher only through peewee's escaping `passphrase=` / `rekey()` API. Never `execute_sql(f"PRAGMA key = '{...}'")`.
@@ -37,6 +37,12 @@ These are also listed in [docs/DESIGN.md §9](docs/DESIGN.md#9-invariants-do-not
 5. **Distinct post-commit errors.** A reopen failure *after* the `os.replace` commit is `VaultRotatedError` (rekey) / `VaultRestoredError` (restore) — never an auth error. The change committed; the old master no longer opens the vault. This is a real failure of the operation; do not report it as "unchanged" or swallow it.
 6. **GUI never touches the ORM.** All credential access goes through `VAULT.*`. The GUI catches `VaultError` (and subclasses) only; the service translates every peewee `DatabaseError` into `VaultError`.
 7. **Don't load ciphertext to draw the list.** `list_credentials()` selects non-password columns only.
+
+(These seven are the security core; the full set of 12 is in [docs/DESIGN.md §16](docs/DESIGN.md#16-invariants-do-not-regress) and includes offline-only operation, no secondary auth oracle, no silent data loss, and no dishonest guarantees.)
+
+## Scope: prefer saying no
+
+PetitePass optimizes for **maximum security per line of code, dependency, and feature** — a small set of strong, understandable mechanisms, not a large feature set. Before adding functionality, weigh it against the explicit **non-goals** ([docs/DESIGN.md §2](docs/DESIGN.md#2-non-goals)) and run the **feature-admission checklist** ([docs/DESIGN.md §4](docs/DESIGN.md#4-feature-admission-criteria)). Declining a feature (especially anything that adds networking, a second source of truth, a new long-lived secret, or untrusted parsing) is a legitimate, expected outcome.
 
 ## Conventions
 

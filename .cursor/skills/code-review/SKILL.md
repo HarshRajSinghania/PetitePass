@@ -18,7 +18,7 @@ merge. For writing a feature use `implement-feature`; for fixing a defect use
 
 ## Instructions — priorities in order
 
-1. **Security invariants** ([docs/DESIGN.md §9](../../../docs/DESIGN.md#9-invariants-do-not-regress)).
+1. **Security invariants** ([docs/DESIGN.md §16](../../../docs/DESIGN.md#16-invariants-do-not-regress)).
    Check the change does not regress any of:
    - Authentication is decryption (no sidecar verifier, no boolean auth flag).
    - Master password reaches SQLCipher only via peewee's escaping API — no

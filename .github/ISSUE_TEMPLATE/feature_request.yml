@@ -7,8 +7,12 @@ body:
     attributes:
       value: |
         Thanks for the suggestion. PetitePass aims to stay small, local, and
-        secure — proposals are weighed against that scope and the security
-        invariants in [docs/DESIGN.md](https://github.com/leo-aa88/PetitePass/blob/main/docs/DESIGN.md).
+        secure — it optimizes for maximum security per line of code, dependency,
+        and feature. Proposals are weighed against the explicit
+        [non-goals](https://github.com/leo-aa88/PetitePass/blob/main/docs/DESIGN.md#2-non-goals)
+        and the [feature-admission checklist](https://github.com/leo-aa88/PetitePass/blob/main/docs/DESIGN.md#4-feature-admission-criteria),
+        and must not regress the security
+        [invariants](https://github.com/leo-aa88/PetitePass/blob/main/docs/DESIGN.md#16-invariants-do-not-regress).
   - type: checkboxes
     id: preflight
     attributes:

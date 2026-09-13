@@ -1,6 +1,6 @@
 <!--
 Thanks for contributing to PetitePass. This is a password manager, so
-security-relevant changes are held to the invariants in docs/DESIGN.md §9.
+security-relevant changes are held to the invariants in docs/DESIGN.md §16.
 Do NOT include real passwords or vault files anywhere in this PR.
 -->
 
@@ -18,7 +18,7 @@ Do NOT include real passwords or vault files anywhere in this PR.
 
 ## Security invariants
 
-<!-- Which invariants in docs/DESIGN.md §9 does this touch, and how do the tests
+<!-- Which invariants in docs/DESIGN.md §16 does this touch, and how do the tests
      exercise them? Write "none" if the change is purely cosmetic/docs. -->
 
 ## Checklist

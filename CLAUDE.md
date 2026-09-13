@@ -16,7 +16,7 @@ QT_QPA_PLATFORM=offscreen python tests/smoke_gui.py
 
 ## This is a password manager
 
-Apply a substantially higher bar than an ordinary desktop app. Before touching `src/petitepass/core/vault.py`, `paths.py`, `strength.py`, or the crypto/auth path, read [docs/DESIGN.md](docs/DESIGN.md) and treat its §9 invariants as hard constraints:
+Apply a substantially higher bar than an ordinary desktop app. Before touching `src/petitepass/core/vault.py`, `paths.py`, `strength.py`, or the crypto/auth path, read [docs/DESIGN.md](docs/DESIGN.md) and treat its §16 invariants as hard constraints:
 
 - Authentication is decryption — never a sidecar hash.
 - The master password reaches SQLCipher only through peewee's escaping API — never `f"PRAGMA key = '{...}'"`.
