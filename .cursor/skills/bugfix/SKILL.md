@@ -24,7 +24,7 @@ functionality use `implement-feature`; for reviewing a diff use `code-review`.
 
 2. **Diagnose the root cause, not the symptom.** Read
    [docs/DESIGN.md](../../../docs/DESIGN.md) and check whether the bug is a
-   violation of an existing invariant (§9): authentication is decryption; no
+   violation of an existing invariant (§16): authentication is decryption; no
    hand-built `PRAGMA`; reject empty/NUL master; atomic vault replacement;
    distinct post-commit errors; the GUI never touches the ORM; the list never
    loads password ciphertext.

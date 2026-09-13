@@ -34,7 +34,7 @@ accessing or modifying data that is not yours while investigating.
 ## Scope
 
 In scope — issues that break the project's security invariants
-([docs/DESIGN.md §9](docs/DESIGN.md#9-invariants-do-not-regress)), for example:
+([docs/DESIGN.md §16](docs/DESIGN.md#16-invariants-do-not-regress)), for example:
 
 - authentication succeeding without the vault actually decrypting;
 - a path that produces a plaintext (unencrypted) vault;
@@ -45,7 +45,7 @@ In scope — issues that break the project's security invariants
 
 Out of scope — threats PetitePass fundamentally cannot defend against, primarily
 **another process running under the same user account** once the vault is
-unlocked (see the threat model in [docs/DESIGN.md](docs/DESIGN.md#8-threat-model)).
+unlocked (see the threat model in [docs/DESIGN.md](docs/DESIGN.md#14-threat-model)).
 Reports about a lost/forgotten master password are also out of scope: by design
 it cannot be recovered.
 

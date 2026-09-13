@@ -140,7 +140,7 @@ class Vault:
         self._explicit_path = str(path) if path is not None else None
         self._resolved_path = None
         self._db = None
-        self._master = None  # held in memory only while unlocked
+        self._master = None  # session-lifetime retention while unlocked; see DESIGN.md §10
 
     @property
     def _path(self) -> str:

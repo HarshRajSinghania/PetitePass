@@ -49,8 +49,11 @@ Before opening a PR, make sure:
       tautology).
 - [ ] No new runtime dependency without a strong justification (`pip-audit` gates
       CI; the runtime set is intentionally small).
+- [ ] A new feature has been weighed against the non-goals
+      ([docs/DESIGN.md §2](docs/DESIGN.md#2-non-goals)) and the feature-admission
+      checklist ([docs/DESIGN.md §4](docs/DESIGN.md#4-feature-admission-criteria)).
 - [ ] Docstrings, the README, and `docs/` are truthful to what the code does.
-- [ ] The change does not regress any invariant in [docs/DESIGN.md §9](docs/DESIGN.md#9-invariants-do-not-regress);
+- [ ] The change does not regress any invariant in [docs/DESIGN.md §16](docs/DESIGN.md#16-invariants-do-not-regress);
       the PR description says which invariants it touches and how the tests
       exercise them.
 

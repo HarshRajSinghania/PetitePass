@@ -20,7 +20,7 @@ option). For fixing broken behavior use `bugfix`; for reviewing a change use
 
 1. **Understand first.** Read [AGENTS.md](../../../AGENTS.md) and
    [docs/DESIGN.md](../../../docs/DESIGN.md). Identify which invariants
-   (DESIGN §9) the feature touches. If it touches the crypto/auth path or any
+   (DESIGN §16) the feature touches. If it touches the crypto/auth path or any
    vault-file operation, treat those invariants as hard constraints. If the
    requirements are ambiguous, ask the user before coding.
 
