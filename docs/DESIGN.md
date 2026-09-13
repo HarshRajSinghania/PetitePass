@@ -203,7 +203,7 @@ parses external files (import) treats that input as hostile.
 
 | Module                | Owns                                                                                  |
 | --------------------- | ------------------------------------------------------------------------------------- |
-| `core/vault.py`       | The connection, the master password (in memory only), all vault-file operations, CRUD |
+| `core/vault.py`       | The connection, intentional session-lifetime retention of the master password, all vault-file operations, CRUD |
 | `core/database.py`    | The peewee `Password` schema — an implementation detail of the Vault                  |
 | `core/credential.py`  | `Credential`, a **passwordless** domain object used for listing                        |
 | `core/paths.py`       | Data directory, file permissions, legacy migration, fsync helpers                     |
@@ -403,8 +403,9 @@ Plaintext secrets are handled on a need-to-touch basis.
 
 **Implemented (current behavior).**
 
-- The master password is held only on the live `Vault` (in memory) while unlocked;
-  `close()` drops it.
+- During an unlocked session the `Vault` intentionally retains the master password;
+  transient copies may also exist in GUI widgets and runtime-managed memory as
+  described in [§5](#5-architecture). `close()` drops the `Vault`'s reference.
 - The credential table lists **passwordless** `Credential` summaries —
   `list_credentials()` selects only `name` / `username` / timestamps, so ciphertext
   is never loaded merely to render the (masked) list
