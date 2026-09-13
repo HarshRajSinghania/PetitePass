@@ -111,6 +111,29 @@ pip install -r requirements.txt
 PYTHONPATH=src python -m petitepass.app
 ```
 
+### Troubleshooting: `Could not load the Qt platform plugin "xcb"`
+
+On a minimal Linux install (common under **WSL**, containers, or a headless server), Qt's `xcb` platform plugin fails to load because the XCB system libraries it links against are not installed:
+
+```
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized.
+```
+
+This is an environment issue, not a PetitePass one — install the libraries the plugin needs (Debian/Ubuntu names):
+
+```bash
+sudo apt-get update && sudo apt-get install -y \
+    libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 \
+    libxcb-xinerama0 libxcb-xkb1 libxkbcommon-x11-0 libxcb-cursor0
+```
+
+To see exactly which library is missing, run with `QT_DEBUG_PLUGINS=1`. Under WSL, `WSLg` also exposes Wayland, so you can sidestep xcb entirely without installing anything by forcing the Wayland backend:
+
+```bash
+QT_QPA_PLATFORM=wayland PYTHONPATH=src python -m petitepass.app
+```
+
 * * *
 
 ## Usage
