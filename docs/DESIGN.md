@@ -212,12 +212,20 @@ parses external files (import) treats that input as hostile.
 | `gui/*`               | Presentation only — talks to `VAULT.*` and the pure helpers, never to peewee          |
 
 The GUI does not import `peewee` or the `Password` model; all credential access
-goes through the `Vault`. The `Vault` is the single security boundary: it holds the
-only open connection and the only in-memory copy of the master password, translates
-every peewee `DatabaseError` into a `VaultError`, and enforces the business rules
-(name uniqueness, "credential must exist", not loading ciphertext to list). Keeping
-this boundary thin and singular is what makes the trusted computing base auditable.
-See [invariant 6](#16-invariants-do-not-regress).
+goes through the `Vault`. The `Vault` is the single **application-level gateway** to
+vault persistence and credential operations: it holds the only open connection, it
+is the only component that *intentionally* retains the master password for the
+duration of an unlocked session, it translates every peewee `DatabaseError` into a
+`VaultError`, and it enforces the business rules (name uniqueness, "credential must
+exist", not loading ciphertext to list). Transient copies of the master password may
+exist in GUI widgets, Python objects, and runtime-managed memory while
+authentication or a password change is in progress — see the memory-limitation note
+in [§10](#10-secret-lifecycle).
+
+Keeping this gateway thin and singular is what keeps the *application-level* attack
+surface auditable. It is not the whole trusted computing base: that still includes
+Python, SQLCipher / `sqlcipher3`, peewee, PyQt (where secrets are displayed or
+copied), and the operating system. See [invariant 6](#16-invariants-do-not-regress).
 
 * * *
 
@@ -287,8 +295,9 @@ caveats:
   durability testing ([§15](#15-testing)) are mature;
 - it requires explicit vault-format versioning; existing vaults must remain
   recoverable; migration must be atomic and tested ([§9](#9-vault-file-operations-and-durability));
-- a raw key must still reach SQLCipher only through the safe escaping API
-  ([invariant 2](#16-invariants-do-not-regress)) — never an ad-hoc `PRAGMA` string;
+- a raw key must still reach SQLCipher only through a reviewed, injection-safe
+  keying path ([invariant 2](#16-invariants-do-not-regress)) — never an ad-hoc
+  `PRAGMA` string;
 - the complexity/security tradeoff must remain clearly favorable.
 
 Until all of that holds, PetitePass ships PBKDF2 as above.
@@ -302,8 +311,9 @@ Until all of that holds, PetitePass ships PBKDF2 as above.
 **Implemented (current behavior).**
 
 - Minimum length: 12 characters (`MIN_MASTER_LENGTH`).
-- Common/compromised blocklist: the candidate is rejected if it appears in the
-  bundled 10k-most-common list (`is_common`).
+- Common-password blocklist: the candidate is rejected if it appears in the bundled
+  10k-most-common list (`is_common`). This is a common-password list, not a
+  breached-credential database.
 - zxcvbn is currently a **hard gate**: a score below 3 (`MIN_MASTER_SCORE`) is
   rejected, and the estimate also drives human-readable advice.
 - No mandatory character-class ("must contain a symbol") rules.
@@ -316,7 +326,7 @@ Until all of that holds, PetitePass ships PBKDF2 as above.
 
 - Prefer a **length-first** policy: raise the minimum length and treat length as the
   primary gate (length dominates guessability for the offline-attack threat).
-- Keep the common/compromised blocklist as a meaningful hard rejection.
+- Keep the common-password blocklist as a meaningful hard rejection.
 - Continue to avoid arbitrary composition rules; support long passphrases and
   Unicode.
 - Treat zxcvbn as **advisory guidance** rather than an absolute veto.
@@ -576,9 +586,12 @@ tests pass:
 
 1. **Authentication is decryption.** A session is valid **only** if the vault
    decrypts *and* the expected `password` table is present.
-2. **Safe key path.** Key material (master password today; a derived key in any
-   future format) reaches SQLCipher **only** through peewee's escaping API — never
-   application-built `PRAGMA` strings.
+2. **Safe key path.** Key material reaches SQLCipher **only** through a reviewed,
+   injection-safe keying path appropriate to the active vault format. Application
+   code must never interpolate untrusted key material into ad-hoc SQL / `PRAGMA`
+   strings. *(Current passphrases use peewee's escaping `passphrase=` / `rekey()`
+   API; a future raw-key format would use SQLCipher's raw-key syntax through an
+   equally reviewed path.)*
 3. **No plaintext/malformed vault from bad input.** An empty or NUL master password
    is refused before any file is created or replaced, so it can never yield a
    plaintext or half-written vault.
