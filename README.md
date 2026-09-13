@@ -11,6 +11,10 @@
 
 PetitePass stores your credentials in a single [SQLCipher](https://www.zetetic.net/sqlcipher/)-encrypted database on your own machine. There is no cloud, no account, and no telemetry. The master password is never stored anywhere: you are "logged in" only when the vault actually decrypts.
 
+<img width="1041" height="633" alt="image" src="https://github.com/user-attachments/assets/9835ebd6-cc4a-4ac4-b996-0105faa828ee" />
+
+* * *
+
 - [Why PetitePass?](#why-petitepass)
 - [Features](#features)
 - [Security model](#security-model)
@@ -53,10 +57,6 @@ Most password managers ask you to trust a server. PetitePass asks you to trust o
 - **Auto-lock** — the vault closes after a period of inactivity and returns you to the login screen.
 - **Search, per-row copy, in-place edit** — filter by name/username, copy username or password, double-click a row to edit.
 - **Cross-platform storage** — data lives in the OS-standard per-user directory (Linux/macOS/Windows), with a one-time migration from older layouts.
-
-## Screenshot
-
-![screenshot](Screenshot.png)
 
 * * *
 
