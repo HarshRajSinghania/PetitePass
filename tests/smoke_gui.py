@@ -66,6 +66,20 @@ cpd.passwordField.setText(MASTER)
 cpd.confirmPasswordField.setText(MASTER)
 cpd.createPassword()
 check("vault created by CreatePasswordDialog", VAULT.exists() and VAULT.is_open)
+check(
+    "CreatePasswordDialog clears master fields on success",
+    cpd.passwordField.text() == "" and cpd.confirmPasswordField.text() == "",
+)
+
+# 1b. Successful login also drops the typed master from the QLineEdit.
+VAULT.close()
+auth = AuthDialog()
+auth.passwordField.setText(MASTER)
+auth.handleLogin()
+check("AuthDialog login reopens the vault", VAULT.is_open)
+check("AuthDialog clears master field on successful login",
+      auth.passwordField.text() == "")
+auth.deleteLater()
 
 # 2. Main window with an empty vault.
 win = MainWindow()
@@ -79,7 +93,7 @@ pd.passwordField.setText("s3cr'et\"\\pw")
 pd.savePassword()
 win.populatePasswordTable()
 check("row added and shown", win.table.rowCount() == 1)
-check("password masked by default", win.table.item(0, 2).text() == "•" * 8)
+check("password masked by default", win.table.item(0, 2).text() == "\u2022" * 8)
 
 # 4. Duplicate name rejected by the DB constraint (no crash).
 pd2 = PasswordDialog(win)
@@ -103,7 +117,7 @@ check("clear wipes our secret when still present", app.clipboard().text() == "")
 win.togglePasswordVisibility(0, "github")
 check("show reveals plaintext", win.table.item(0, 2).text() == "s3cr'et\"\\pw")
 win.togglePasswordVisibility(0, "github")
-check("hide re-masks", win.table.item(0, 2).text() == "•" * 8)
+check("hide re-masks", win.table.item(0, 2).text() == "\u2022" * 8)
 
 # 6b. Search / filter.
 win.searchField.setText("git")
@@ -145,6 +159,12 @@ mm.currentPasswordField.setText(MASTER)
 mm.passwordField.setText(NEW_MASTER)
 mm.confirmPasswordField.setText(NEW_MASTER)
 mm.modifyMasterPassword()
+check(
+    "ModifyMasterPasswordDialog clears master fields on success",
+    mm.currentPasswordField.text() == ""
+    and mm.passwordField.text() == ""
+    and mm.confirmPasswordField.text() == "",
+)
 VAULT.close()
 try:
     VAULT.open(MASTER)
