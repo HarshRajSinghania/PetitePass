@@ -66,20 +66,18 @@ cpd.passwordField.setText(MASTER)
 cpd.confirmPasswordField.setText(MASTER)
 cpd.createPassword()
 check("vault created by CreatePasswordDialog", VAULT.exists() and VAULT.is_open)
-check(
-    "CreatePasswordDialog clears master fields on success",
-    cpd.passwordField.text() == "" and cpd.confirmPasswordField.text() == "",
-)
+check("CreatePasswordDialog clears master fields on success",
+      cpd.passwordField.text() == "" and cpd.confirmPasswordField.text() == "")
 
-# 1b. Successful login also drops the typed master from the QLineEdit.
+# 1b. Successful unlock also drops the widget-held master copy.
 VAULT.close()
-auth = AuthDialog()
-auth.passwordField.setText(MASTER)
-auth.handleLogin()
-check("AuthDialog login reopens the vault", VAULT.is_open)
-check("AuthDialog clears master field on successful login",
-      auth.passwordField.text() == "")
-auth.deleteLater()
+_login = AuthDialog()
+_login.passwordField.setText(MASTER)
+_login.handleLogin()
+check("AuthDialog clears master field on successful unlock",
+      _login.passwordField.text() == "")
+check("AuthDialog successful unlock leaves vault open", VAULT.is_open)
+_login.deleteLater()
 
 # 2. Main window with an empty vault.
 win = MainWindow()
@@ -159,12 +157,10 @@ mm.currentPasswordField.setText(MASTER)
 mm.passwordField.setText(NEW_MASTER)
 mm.confirmPasswordField.setText(NEW_MASTER)
 mm.modifyMasterPassword()
-check(
-    "ModifyMasterPasswordDialog clears master fields on success",
-    mm.currentPasswordField.text() == ""
-    and mm.passwordField.text() == ""
-    and mm.confirmPasswordField.text() == "",
-)
+check("ModifyMasterPasswordDialog clears master fields on success",
+      mm.currentPasswordField.text() == ""
+      and mm.passwordField.text() == ""
+      and mm.confirmPasswordField.text() == "")
 VAULT.close()
 try:
     VAULT.open(MASTER)
