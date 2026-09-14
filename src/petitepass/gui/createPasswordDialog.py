@@ -47,7 +47,6 @@ class CreatePasswordDialog(QDialog):
             self.reject()
             return
 
-        # The typed master is no longer needed after VAULT.create succeeds.
         self.passwordField.clear()
         self.confirmPasswordField.clear()
         self.password_created.emit()
